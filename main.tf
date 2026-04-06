@@ -47,40 +47,4 @@ module "vpc" {
   tags = var.tags
 }
 
-# ---------------- EKS (IRSA ON) ----------------
-module "eks" {
-  source  = "terraform-aws-modules/eks/aws"
-  version = "~> 20.37"
-
-  cluster_name        = var.cluster_name
-  cluster_version     = var.kubernetes_version
-  vpc_id              = module.vpc.vpc_id
-  subnet_ids          = module.vpc.private_subnets
-
-  enable_irsa                              = true
-  enable_cluster_creator_admin_permissions = true
-  cluster_endpoint_public_access           = true
-
-  cluster_addons = {
-    coredns   = {}
-    kube-proxy = {}
-    vpc-cni   = {}
-  }
-
-  eks_managed_node_groups = {
-    workers = {
-      instance_types = var.node_types
-      desired_size   = var.node_desired
-      min_size       = var.node_min
-      max_size       = var.node_max
-      disk_size      = var.node_disk_gib
-      labels         = { role = "worker" }
-      tags           = var.tags
-      # capacity_type = "SPOT"
-    }
-  }
-
-  tags = var.tags
-}
-
 
